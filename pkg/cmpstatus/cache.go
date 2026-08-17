@@ -9,7 +9,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-// Cache checks the status of the cache component,
+// Cache checks the status of the cache component.
 type Cache struct {
 	client.Client
 }
