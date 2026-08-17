@@ -8,7 +8,6 @@ import (
 
 	qv1 "github.com/quay/quay-operator/apis/quay/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 )
@@ -23,7 +22,7 @@ func TestCacheCheck(t *testing.T) {
 		{
 			name: "cache_and_redis_managed",
 			quay: qv1.QuayRegistry{
-				ObjectMeta: v1.ObjectMeta{
+				ObjectMeta: metav1.ObjectMeta{
 					Name: "registry",
 					UID:  "uid",
 				},
@@ -50,7 +49,7 @@ func TestCacheCheck(t *testing.T) {
 		{
 			name: "cache_not_managed",
 			quay: qv1.QuayRegistry{
-				ObjectMeta: v1.ObjectMeta{
+				ObjectMeta: metav1.ObjectMeta{
 					Name: "registry",
 					UID:  "uid",
 				},
@@ -73,7 +72,7 @@ func TestCacheCheck(t *testing.T) {
 		{
 			name: "cache_managed_but_redis_unmanaged",
 			quay: qv1.QuayRegistry{
-				ObjectMeta: v1.ObjectMeta{
+				ObjectMeta: metav1.ObjectMeta{
 					Name: "registry",
 					UID:  "uid",
 				},
