@@ -553,6 +553,7 @@ var inflateTests = []struct {
 					{Kind: "mirror", Managed: true},
 					{Kind: "horizontalpodautoscaler", Managed: true},
 					{Kind: "monitoring", Managed: true},
+					{Kind: "cache", Managed: true},
 				},
 			},
 		},
@@ -566,7 +567,8 @@ var inflateTests = []struct {
 				"config.yaml": encode(map[string]interface{}{"SERVER_HOSTNAME": "quay.io"}),
 			},
 		},
-		expected:    withComponents([]string{"job", "quay", "clair", "postgres", "redis", "objectstorage", "mirror", "horizontalpodautoscaler", "clairpostgres", "monitoring"}),
+		expected: withComponents([]string{"job", "quay", "clair", "postgres", "redis", "objectstorage",
+			"mirror", "horizontalpodautoscaler", "clairpostgres", "monitoring", "cache"}),
 		expectedErr: nil,
 	},
 	{
@@ -581,6 +583,7 @@ var inflateTests = []struct {
 					{Kind: "objectstorage", Managed: false},
 					{Kind: "mirror", Managed: false},
 					{Kind: "horizontalpodautoscaler", Managed: false},
+					{Kind: "cache", Managed: false},
 				},
 			},
 		},
@@ -604,6 +607,7 @@ var inflateTests = []struct {
 					{Kind: "redis", Managed: false},
 					{Kind: "objectstorage", Managed: false},
 					{Kind: "mirror", Managed: true},
+					{Kind: "cache", Managed: false},
 				},
 			},
 		},
@@ -627,6 +631,7 @@ var inflateTests = []struct {
 					{Kind: "redis", Managed: true},
 					{Kind: "objectstorage", Managed: true},
 					{Kind: "mirror", Managed: true},
+					{Kind: "cache", Managed: true},
 				},
 			},
 			Status: v1.QuayRegistryStatus{
@@ -642,7 +647,8 @@ var inflateTests = []struct {
 				"config.yaml": encode(map[string]interface{}{"SERVER_HOSTNAME": "quay.io"}),
 			},
 		},
-		expected:    withComponents([]string{"quay", "clair", "postgres", "redis", "objectstorage", "mirror", "clairpostgres"}),
+		expected: withComponents([]string{"quay", "clair", "postgres", "redis", "objectstorage",
+			"mirror", "clairpostgres", "cache"}),
 		expectedErr: nil,
 	},
 	{
@@ -656,6 +662,7 @@ var inflateTests = []struct {
 					{Kind: "redis", Managed: true},
 					{Kind: "objectstorage", Managed: true},
 					{Kind: "mirror", Managed: true},
+					{Kind: "cache", Managed: true},
 				},
 			},
 			Status: v1.QuayRegistryStatus{
@@ -671,7 +678,8 @@ var inflateTests = []struct {
 				"config.yaml": encode(map[string]interface{}{"SERVER_HOSTNAME": "quay.io", "DATABASE_SECRET_KEY": "abc123"}),
 			},
 		},
-		expected:    withComponents([]string{"quay", "clair", "postgres", "redis", "objectstorage", "mirror", "clairpostgres"}),
+		expected: withComponents([]string{"quay", "clair", "postgres", "redis", "objectstorage",
+			"mirror", "clairpostgres", "cache"}),
 		expectedErr: nil,
 	},
 	{
@@ -779,6 +787,7 @@ var inflateTests = []struct {
 					{Kind: "objectstorage", Managed: true},
 					{Kind: "mirror", Managed: true},
 					{Kind: "horizontalpodautoscaler", Managed: true},
+					{Kind: "cache", Managed: true},
 				},
 			},
 		},
@@ -796,7 +805,8 @@ var inflateTests = []struct {
 				),
 			},
 		},
-		expected:    withComponents([]string{"quay", "clair", "postgres", "redis", "objectstorage", "mirror", "horizontalpodautoscaler", "clairpostgres"}),
+		expected: withComponents([]string{"quay", "clair", "postgres", "redis", "objectstorage",
+			"mirror", "horizontalpodautoscaler", "clairpostgres", "cache"}),
 		expectedErr: nil,
 	},
 	{
@@ -811,6 +821,7 @@ var inflateTests = []struct {
 					{Kind: "objectstorage", Managed: true},
 					{Kind: "mirror", Managed: true},
 					{Kind: "horizontalpodautoscaler", Managed: true},
+					{Kind: "cache", Managed: true},
 				},
 			},
 		},
@@ -829,7 +840,60 @@ var inflateTests = []struct {
 				),
 			},
 		},
-		expected:    withComponents([]string{"job", "quay", "clair", "postgres", "redis", "objectstorage", "mirror", "horizontalpodautoscaler", "clairpostgres"}),
+		expected: withComponents([]string{"job", "quay", "clair", "postgres", "redis", "objectstorage",
+			"mirror", "horizontalpodautoscaler", "clairpostgres", "cache"}),
+		expectedErr: nil,
+	},
+	{
+		name: "RenderWithCacheChanges",
+		quayRegistry: &v1.QuayRegistry{
+			Spec: v1.QuayRegistrySpec{
+				Components: []v1.Component{
+					{Kind: "postgres", Managed: true},
+					{Kind: "clair", Managed: true},
+					{Kind: "clairpostgres", Managed: true},
+					{Kind: "redis", Managed: false},
+					{Kind: "mirror", Managed: true},
+					{Kind: "horizontalpodautoscaler", Managed: true},
+					{Kind: "cache", Managed: false},
+					{Kind: "objectstorage", Managed: true},
+				},
+			},
+		},
+		ctx: quaycontext.QuayRegistryContext{
+			SupportsObjectStorage:    true,
+			SupportsRoutes:           true,
+			SupportsMonitoring:       true,
+			ObjectStorageInitialized: true,
+		},
+		configBundle: &corev1.Secret{
+			Data: map[string][]byte{
+				"config.yaml": encode(
+					map[string]any{
+						"SERVER_HOSTNAME": "quay.io",
+						"USER_EVENTS_REDIS": map[string]any{
+							"host": "redishost",
+							"port": 6379,
+						},
+						"BUILDLOGS_REDIS": map[string]any{
+							"host": "redishost",
+							"port": 6379,
+						},
+						"DATA_MODEL_CACHE_CONFIG": map[string]any{
+							"engine": "redis",
+							"redis_config": map[string]any{
+								"primary": map[string]any{
+									"host": "redishost",
+									"port": 6379,
+								},
+							},
+						},
+					},
+				),
+			},
+		},
+		expected: withComponents([]string{"job", "quay", "clair", "postgres", "objectstorage",
+			"mirror", "horizontalpodautoscaler", "clairpostgres"}),
 		expectedErr: nil,
 	},
 }

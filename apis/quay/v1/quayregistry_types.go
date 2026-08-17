@@ -40,7 +40,7 @@ type QuayVersion string
 var QuayVersionCurrent QuayVersion = QuayVersion(os.Getenv("QUAY_VERSION"))
 
 // ComponentKind holds a component type, e.g. "clair", "postgres", etc.
-// +kubebuilder:validation:Enum=quay;postgres;clair;clairpostgres;redis;horizontalpodautoscaler;objectstorage;route;mirror;monitoring;tls
+// +kubebuilder:validation:Enum=quay;postgres;clair;clairpostgres;redis;horizontalpodautoscaler;objectstorage;route;mirror;monitoring;tls;cache
 type ComponentKind string
 
 // Follow a list of constants representing all supported components.
@@ -50,6 +50,7 @@ const (
 	ComponentClair         ComponentKind = "clair"
 	ComponentClairPostgres ComponentKind = "clairpostgres"
 	ComponentRedis         ComponentKind = "redis"
+	ComponentCache         ComponentKind = "cache"
 	ComponentHPA           ComponentKind = "horizontalpodautoscaler"
 	ComponentObjectStorage ComponentKind = "objectstorage"
 	ComponentRoute         ComponentKind = "route"
@@ -64,6 +65,7 @@ var AllComponents = []ComponentKind{
 	ComponentPostgres,
 	ComponentClair,
 	ComponentRedis,
+	ComponentCache,
 	ComponentHPA,
 	ComponentObjectStorage,
 	ComponentRoute,
@@ -217,6 +219,7 @@ const (
 	ComponentClairReady         ConditionType = "ComponentClairReady"
 	ComponentClairPostgresReady ConditionType = "ComponentClairPostgresReady"
 	ComponentRedisReady         ConditionType = "ComponentRedisReady"
+	ComponentCacheReady         ConditionType = "ComponentCacheReady"
 	ComponentHPAReady           ConditionType = "ComponentHPAReady"
 	ComponentObjectStorageReady ConditionType = "ComponentObjectStorageReady"
 	ComponentRouteReady         ConditionType = "ComponentRouteReady"
@@ -246,6 +249,7 @@ const (
 	ConditionReasonUpgradeUnsupported                    ConditionReason = "UpgradeUnsupported"
 	ConditionReasonComponentCreationFailed               ConditionReason = "ComponentCreationFailed"
 	ConditionReasonRouteComponentDependencyError         ConditionReason = "RouteComponentDependencyError"
+	ConditionReasonCacheComponentDependencyError         ConditionReason = "CacheComponentDependencyError"
 	ConditionReasonObjectStorageComponentDependencyError ConditionReason = "ObjectStorageComponentDependencyError"
 	ConditionReasonMonitoringComponentDependencyError    ConditionReason = "MonitoringComponentDependencyError"
 	ConditionReasonConfigInvalid                         ConditionReason = "ConfigInvalid"
@@ -776,6 +780,8 @@ func FieldGroupNameFor(cmp ComponentKind) (string, error) {
 		return "", nil
 	case ComponentRedis:
 		return "Redis", nil
+	case ComponentCache:
+		return "Cache", nil
 	case ComponentObjectStorage:
 		return "DistributedStorage", nil
 	case ComponentRoute:
@@ -1040,6 +1046,7 @@ func RemoveUnusedConditions(quay *QuayRegistry) {
 		ComponentMirrorReady,
 		ComponentMonitoringReady,
 		ComponentTLSReady,
+		ComponentCacheReady,
 	}
 
 	newconds := []Condition{}
