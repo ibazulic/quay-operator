@@ -798,6 +798,19 @@ func (r *QuayRegistryReconciler) Reconcile(ctx context.Context, req ctrl.Request
 		)
 	}
 
+	if v1.ComponentIsManaged(updatedQuay.Spec.Components, v1.ComponentCache) {
+		if !v1.ComponentIsManaged(updatedQuay.Spec.Components, v1.ComponentRedis) {
+			return r.reconcileWithCondition(
+				ctx,
+				&quay,
+				v1.ConditionTypeRolloutBlocked,
+				metav1.ConditionTrue,
+				v1.ConditionReasonCacheComponentDependencyError,
+				"cache set as managed, but redis is unmanaged",
+			)
+		}
+	}
+
 	if err = v1.EnsureDefaultComponents(quayContext, updatedQuay); err != nil {
 		log.Error(err, "could not ensure default `spec.components`")
 		return r.Requeue, err

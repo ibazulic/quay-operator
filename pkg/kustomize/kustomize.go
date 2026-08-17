@@ -771,7 +771,7 @@ func KustomizationFor(
 		}
 	}
 	for _, component := range quay.Spec.Components {
-		if !component.Managed || component.Kind == v1.ComponentQuay {
+		if !component.Managed || component.Kind == v1.ComponentQuay || component.Kind == v1.ComponentCache {
 			continue
 		}
 
