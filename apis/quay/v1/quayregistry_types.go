@@ -497,6 +497,11 @@ func EnsureDefaultComponents(ctx *quaycontext.QuayRegistryContext, quay *QuayReg
 		ComponentTLS: {
 			check: func() bool { return ctx.TLSCert == nil && ctx.TLSKey == nil },
 		},
+		// verify that Redis is managed by the operator before reporting that cache component should be enabled.
+		// if Redis is not managed, we must set cache component to be unmanaged to not break upgrades.
+		ComponentCache: {
+			check: func() bool { return ComponentIsManaged(quay.Spec.Components, ComponentRedis) },
+		},
 	}
 
 	for _, cmp := range AllComponents {

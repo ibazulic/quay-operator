@@ -11,10 +11,10 @@ import (
 
 // Cache checks the status of the cache component.
 type Cache struct {
-	client.Client
+	Client client.Client
 }
 
-// Name provides the cannonical name of the component.
+// Name provides the canonical name of the component.
 func (c *Cache) Name() string {
 	return "cache"
 }

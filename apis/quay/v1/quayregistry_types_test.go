@@ -320,6 +320,37 @@ var ensureDefaultComponentsTests = []struct {
 		},
 		nil,
 	},
+	{
+		"RedisUnmanagedImpliesCacheUnmanaged",
+		QuayRegistry{
+			Spec: QuayRegistrySpec{
+				Components: []Component{
+					{Kind: "redis", Managed: false},
+				},
+			},
+		},
+		quaycontext.QuayRegistryContext{
+			SupportsRoutes:           true,
+			SupportsMonitoring:       true,
+			SupportsObjectStorage:    true,
+			ObjectStorageInitialized: true,
+		},
+		[]Component{
+			{Kind: "quay", Managed: true},
+			{Kind: "postgres", Managed: true},
+			{Kind: "redis", Managed: false},
+			{Kind: "clair", Managed: true},
+			{Kind: "clairpostgres", Managed: true},
+			{Kind: "objectstorage", Managed: true},
+			{Kind: "route", Managed: true},
+			{Kind: "tls", Managed: true},
+			{Kind: "horizontalpodautoscaler", Managed: true},
+			{Kind: "mirror", Managed: true},
+			{Kind: "monitoring", Managed: true},
+			{Kind: "cache", Managed: false},
+		},
+		nil,
+	},
 }
 
 func TestEnsureDefaultComponents(t *testing.T) {
