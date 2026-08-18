@@ -389,7 +389,7 @@ github.com/prometheus/procfs/internal/util
 # github.com/quay/clair/config v1.4.3
 ## explicit; go 1.22.0
 github.com/quay/clair/config
-# github.com/quay/quay/config-tool v0.0.0-20260805162006-1c0a5be3f154
+# github.com/quay/quay/config-tool v0.0.0-20260810135006-0661e92b7a6a
 ## explicit; go 1.25.0
 github.com/quay/quay/config-tool/pkg/lib/fieldgroups/cache
 github.com/quay/quay/config-tool/pkg/lib/fieldgroups/database

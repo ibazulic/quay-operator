@@ -35,7 +35,7 @@ Components can be `managed: true` (operator handles lifecycle) or `managed: fals
 | `horizontalpodautoscaler` | HPA for Quay/Clair/Mirror | No | managed |
 | `mirror` | Repository mirroring | No | managed |
 | `monitoring` | Prometheus metrics | No | managed (if Prometheus API available) |
-| `cache` | Model cache configuration | No | managed (if Redis is available) |
+| `cache` | Model cache configuration | No | managed (if Redis is managed by the operator) |
 
 ## Component Overrides
 

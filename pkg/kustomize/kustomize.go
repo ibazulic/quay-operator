@@ -771,6 +771,7 @@ func KustomizationFor(
 		}
 	}
 	for _, component := range quay.Spec.Components {
+		// cache component is a config only change, it does not require specific Kustomize templates
 		if !component.Managed || component.Kind == v1.ComponentQuay || component.Kind == v1.ComponentCache {
 			continue
 		}
