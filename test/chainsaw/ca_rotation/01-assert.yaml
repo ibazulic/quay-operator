@@ -37,6 +37,9 @@ status:
   - type: ComponentMonitoringReady
     reason: ComponentNotManaged
     status: "True"
+  - type: ComponentCacheReady
+    reason: ComponentReady
+    status: "True"
   - type: ComponentPostgresReady
     reason: ComponentReady
     status: "True"
