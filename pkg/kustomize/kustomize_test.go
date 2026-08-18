@@ -984,12 +984,12 @@ func TestInflate(t *testing.T) {
 
 				if v1.ComponentIsManaged(test.quayRegistry.Spec.Components, v1.ComponentCache) {
 					assert.Contains(config, "DATA_MODEL_CACHE_CONFIG", test.name)
-					cache_config := config["DATA_MODEL_CACHE_CONFIG"].(map[string]any)
-					assert.Equal("redis", cache_config["engine"], test.name)
-					redis_config := cache_config["redis_config"].(map[string]any)
-					redis_primary := redis_config["primary"].(map[string]any)
-					assert.Contains(redis_primary["host"], "quay-redis", test.name)
-					assert.Equal(float64(6379), redis_primary["port"], test.name)
+					cacheConfig := config["DATA_MODEL_CACHE_CONFIG"].(map[string]any)
+					assert.Equal("redis", cacheConfig["engine"], test.name)
+					redisConfig := cacheConfig["redis_config"].(map[string]any)
+					redisPrimary := redisConfig["primary"].(map[string]any)
+					assert.Contains(redisPrimary["host"], "quay-redis", test.name)
+					assert.Equal(float64(6379), redisPrimary["port"], test.name)
 				}
 
 				if strings.Contains(objectMeta.GetName(), v1.ManagedKeysSecretNameFor(test.quayRegistry)) {

@@ -14,6 +14,9 @@ If `status.currentVersion` is unset, reconcile as normal.
 If `status.currentVersion` equals the Operator version, reconcile as normal.
 If `status.currentVersion` does not equal the Operator version, check if it can be upgraded. If it can, perform upgrade tasks and set the `status.currentVersion` to the Operator's version once complete. If it cannot be upgraded, return an error and leave the `QuayRegistry` and its deployed Kubernetes objects alone.
 
+#### Cache component
+With new versions of the operator, a new `cache` component is added to the `QuayRegistry` custom resource. This component sets up Quay pods to use Redis as an in-memory caching store. Previously, each Quay pod used an internal Memcached instance for caching purposes and cached data was not shared between pods. The new caching scheme allows Quay to use Redis as the cache store optimizing sharing of data between pods, lowering database pressure by lowering the number of database calls and prevents stale cache scenarios. On upgrades, if Redis is managed by the operator, the component will implicitly be set to as `managed: true` and added to `QuayRegistry` custom resource. If Redis is unmanaged, caching will be disabled and Quay will fall back to Memcached unless caching configuration is provided through the init config bundle.
+
 ### From QuayEcosystem
 
 Upgrades are supported from previous versions of the Operator which used the `QuayEcosystem` API for a limited set of configurations. To ensure that migrations do not happen unexpectedly, a special label needs to be applied to the `QuayEcosystem` for it to be migrated. A new `QuayRegistry` will be created for the Operator to manage, but the old `QuayEcosystem` will remain until manually deleted to ensure that you can roll back and still access Quay in case anything goes wrong. To migrate an existing `QuayEcosystem` to a new `QuayRegistry`, follow these steps:
