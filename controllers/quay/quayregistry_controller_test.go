@@ -1066,6 +1066,13 @@ func Test_hasNecessaryConfig(t *testing.T) {
 				"config.yaml": []byte("DATA_MODEL_CACHE_CONFIG:\n  engine: redis\n  redis_config:\n    host: somehost\n    port: 12345\n  repository_blob_cache_ttl: 120s\n  catalog_page_cache_ttl: 120s\n  active_repo_tags_cache_ttl: 120s\n  value_size_limit: 5MiB\n")},
 			quay: quayWithUnmanagedComponents(v1.ComponentCache),
 		},
+		{
+			name:   "managed cache and redis but with provided config",
+			experr: true,
+			cfg: map[string][]byte{
+				"config.yaml": []byte("DATA_MODEL_CACHE_CONFIG:\n  engine: redis\n  redis_config:\n    host: somehost\n    port: 12345\n  repository_blob_cache_ttl: 120s\n  catalog_page_cache_ttl: 120s\n  active_repo_tags_cache_ttl: 120s\n  value_size_limit: 5MiB\n")},
+			quay: quayWithUnmanagedComponents(),
+		},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			reconciler := QuayRegistryReconciler{}

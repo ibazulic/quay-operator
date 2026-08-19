@@ -19,6 +19,10 @@ With new versions of the operator, a new `cache` component is added to the `Quay
 
 On upgrades, if Redis is managed by the operator, the `cache` component will implicitly be set to `managed: true` and added to `QuayRegistry` custom resource. If Redis is unmanaged, `cache` component of the `QuayRegistry` custom resource will automatically be set to `managed: false` and Quay will fall back to the internal Memcached instance unless caching configuration is provided through the init config bundle.
 
+If you added a customized `DATA_MODEL_CACHE_CONFIG` to the init config bundle prior to upgrading and you have `redis` component set as `managed: true`, you must either:
+1. set the `cache` component explicitly to `managed: false` in the `QuayRegistry` custom resource, or
+2. delete the customized configuration from the init config bundle and allow the operator to set up safe defaults for your Quay deployment.
+
 ### From QuayEcosystem
 
 Upgrades are supported from previous versions of the Operator which used the `QuayEcosystem` API for a limited set of configurations. To ensure that migrations do not happen unexpectedly, a special label needs to be applied to the `QuayEcosystem` for it to be migrated. A new `QuayRegistry` will be created for the Operator to manage, but the old `QuayEcosystem` will remain until manually deleted to ensure that you can roll back and still access Quay in case anything goes wrong. To migrate an existing `QuayEcosystem` to a new `QuayRegistry`, follow these steps:
