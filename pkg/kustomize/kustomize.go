@@ -408,7 +408,7 @@ func ModelFor(gvk schema.GroupVersionKind) client.Object {
 		})
 		return obj
 	default:
-		panic(fmt.Sprintf("Missing model for GVK %s", gvk.String()))
+		return nil
 	}
 }
 
