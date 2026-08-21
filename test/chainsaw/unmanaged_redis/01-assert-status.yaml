@@ -10,9 +10,9 @@ status:
     status: "True"
   - type: ComponentMonitoringReady
     status: "True"
-  - type: ComponentPostgresReady
-    status: "True"
   - type: ComponentCacheReady
+    status: "True"
+  - type: ComponentPostgresReady
     status: "True"
   - type: ComponentObjectStorageReady
     status: "True"
