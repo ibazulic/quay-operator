@@ -26,6 +26,8 @@ spec:
       managed: true
     - kind: tls
       managed: true
+    - kind: cache
+      managed: true
 status:
   conditions:
   - type: ComponentHPAReady
